@@ -1,0 +1,777 @@
+:root {
+    /* Obsidian-inspired Dark Theme Variables */
+    --bg-color: #1e1e1e;
+    --text-main: #dcddde;
+    --text-muted: #8b8b93;
+    --primary-color: #5c6bc0; /* Classic, classy muted indigo/blue */
+    --primary-hover: #7986cb;
+    --surface-0: #1e1e1e;    /* Deepest background */
+    --surface-1: #252526;    /* Slightly elevated cards */
+    --surface-2: #2d2d30;    /* Toolbar, active items */
+    --border-color: #3f3f4e; /* Subtle borders */
+    --line-color: #52525e;   /* Mindmap connection lines */
+    --toolbar-blur-bg: rgba(30, 30, 30, 0.85);
+    
+    /* Calendar specifics */
+    --cal-grid-gap: 8px;
+    --cal-day-bg: #252526;
+    --cal-day-hover: #2d2d30;
+    --cal-today-bg: rgba(92, 107, 192, 0.15); /* Tinted indigo for today */
+    --cal-today-border: #5c6bc0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-main);
+    background-color: var(--surface-0);
+    background-image: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=3000&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+#app-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.view {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#calendar-view, #admin-calendar-view {
+    transform: scale(0.85);
+}
+
+#calendar-view.active, #admin-calendar-view.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1);
+}
+
+#calendar-view.zoomed-in, #admin-calendar-view.zoomed-in {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.3);
+}
+
+#mindmap-view {
+    transform: scale(0.85);
+}
+
+#mindmap-view.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1);
+}
+
+/* --- Users View Styles --- */
+#users-view {
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.5s ease-in-out, transform 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#users-view.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1);
+}
+
+#users-view.zoom-in {
+    opacity: 0;
+    transform: scale(3);
+    pointer-events: none;
+}
+
+.user-nodes-container {
+    position: relative;
+    width: 600px; /* Space for the circle */
+    height: 600px;
+}
+
+.user-node {
+    position: absolute;
+    /* Center the origin so JS can easily position them in a circle */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(30, 30, 35, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 18px 36px;
+    border-radius: 50px;
+    font-size: 1.15rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.user-node:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    /* Scale gracefully without shifting the base margin calculations */
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+}
+
+.admin-node {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    background: rgba(92, 107, 192, 0.3); /* Make Rajat stand out slightly matching the primary theme */
+    border-color: rgba(92, 107, 192, 0.6);
+}
+.admin-node:hover {
+    transform: scale(1.05);
+}
+
+/* --- Intro View Styles --- */
+#intro-view {
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.5s ease 1.8s; /* Fades out nicely covering the transition */
+}
+
+#intro-view.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.milky-way-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3000&auto=format&fit=crop') center/cover no-repeat;
+    opacity: 1;
+    transition: transform 3.5s cubic-bezier(0.5, 0, 0.1, 1), opacity 1s ease 2s;
+    transform-origin: 52% 48%; /* A bright star anchor in this image */
+}
+
+#intro-view.zoom-in {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#intro-view.zoom-in .milky-way-bg {
+    transform: scale(25); /* Monumental zoom into the star */
+    opacity: 0; /* Fade out inner light into the calendar */
+}
+
+/* --- Calendar Styles --- */
+#calendar-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.calendar-container {
+    background: rgba(30, 30, 35, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    flex: 1;
+    padding: 32px 40px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+}
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    color: var(--text-muted);
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background: var(--surface-2);
+    color: var(--text-main);
+    border-color: var(--border-color);
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--cal-grid-gap);
+    margin-bottom: 8px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: 1fr;
+    gap: var(--cal-grid-gap);
+    flex: 1;
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--cal-day-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+/* --- Summary Styles --- */
+#summary-view {
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#summary-view.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.summary-container {
+    padding: 30px;
+}
+.summary-content-area {
+    margin-top: 20px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 10px;
+}
+.summary-card {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.summary-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+.summary-card p {
+    margin: 4px 0;
+    white-space: pre-wrap;
+}
+.summary-card hr {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 12px 0;
+}
+
+.calendar-day.disabled-day {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+
+.calendar-day:hover:not(.empty):not(.disabled-day) {
+    background: var(--cal-day-hover);
+    border-color: var(--primary-color);
+    box-shadow: inset 0 0 0 1px var(--primary-color);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+}
+
+.calendar-day.today {
+    background: var(--cal-today-bg);
+    border-color: var(--cal-today-border);
+    color: #fff;
+    font-weight: 600;
+}
+
+.calendar-day.today:hover {
+    background: rgba(92, 107, 192, 0.25);
+}
+
+.calendar-day .has-data-dot {
+    position: absolute;
+    bottom: 8px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.calendar-day.today .has-data-dot {
+    background: var(--primary-hover);
+}
+
+.calendar-day:hover:not(.empty) .has-data-dot {
+    background: var(--primary-color);
+}
+
+/* --- MindMap View Styles --- */
+#toolbar {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--toolbar-blur-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 8px; /* Square/classy look like Obsidian toolbars */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+}
+
+.logo {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-main);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#current-date-title {
+    color: var(--primary-hover);
+    font-family: monospace; /* Developer/Obsidian aesthetic */
+    font-size: 0.85rem;
+}
+
+.instructions {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.icon-text-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid transparent;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.icon-text-btn:hover {
+    background: var(--surface-2);
+    border-color: var(--border-color);
+}
+
+.back-to-universe-btn {
+    margin-bottom: 20px;
+    background: var(--surface-1);
+    border-color: var(--border-color);
+    align-self: flex-start;
+}
+
+.back-to-universe-btn:hover {
+    background: var(--surface-2);
+    border-color: var(--primary-color);
+}
+
+#clearBtn {
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid transparent;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#clearBtn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+}
+
+#board {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    cursor: grab;
+}
+
+#board:active {
+    cursor: grabbing;
+}
+
+#lines-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.connection-line {
+    fill: none;
+    stroke: var(--line-color);
+    stroke-width: 2px;
+    stroke-linecap: round;
+    transition: stroke 0.2s ease;
+}
+
+.connection-line.drawing {
+    stroke: var(--primary-color);
+    stroke-dasharray: 4 4;
+    animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -8;
+    }
+}
+
+/* Classy Obsidian Canvas Nodes */
+.node {
+    position: absolute;
+    min-width: 60px;
+    min-height: 24px;
+    cursor: grab;
+    user-select: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--surface-1);
+    border: 1px solid var(--border-color);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.1s;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 300px;
+    color: var(--text-main);
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.node:hover {
+    border-color: var(--text-muted);
+}
+
+.node.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.node.dragging {
+    cursor: grabbing;
+    z-index: 100;
+    background: var(--surface-2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    border-color: var(--primary-color);
+}
+
+.connector {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: crosshair;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 11;
+}
+
+.node.selected .connector, .node:hover .connector {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.connector:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.text-input {
+    position: absolute;
+    background: var(--surface-1);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--text-main);
+    padding: 10px 16px;
+    min-width: 60px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-width: 300px;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color), 0 8px 24px rgba(0,0,0,0.5);
+    border-radius: 6px;
+    z-index: 1000;
+    outline: none;
+    cursor: text;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popIn 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Password Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.modal-content {
+    background: var(--cal-bg);
+    border: 1px solid var(--border-color);
+    padding: 30px;
+    border-radius: 12px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--text-main);
+    font-size: 1.2rem;
+}
+.modal-content input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 1rem;
+    margin-bottom: 20px;
+    outline: none;
+    transition: border-color 0.2s ease;
+    text-align: center;
+}
+.modal-content input:focus {
+    border-color: var(--primary-color);
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+.modal-actions button {
+    flex: 1;
+    justify-content: center;
+}
+
+/* UAT Toolbar Metrics */
+.uat-metrics-display {
+    font-size: 0.85em;
+    font-weight: 500;
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+}
+
+.uat-metrics-display span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* UAT Form Elements inside Node */
+.uat-answer-node {
+    min-width: 250px;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.uat-answer-node textarea {
+    width: 100%;
+    min-height: 80px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 6px;
+    padding: 8px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.9em;
+}
+
+.uat-answer-node textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.uat-answer-node label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.9em;
+    cursor: pointer;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.uat-answer-node input[type="radio"],
+.uat-answer-node input[type="checkbox"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: var(--primary-color);
+}
+
+.uat-answer-node .uat-btn,
+.uat-answer-node button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    align-self: flex-start;
+    font-weight: 500;
+    font-size: 0.9em;
+    transition: background 0.2s;
+}
+
+.uat-answer-node button:hover {
+    background: var(--primary-hover);
+}

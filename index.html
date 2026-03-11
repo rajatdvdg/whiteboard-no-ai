@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindMap Calendar</title>
+    <meta name="description" content="A fast, modern calendar with daily mindmaps.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="app-container">
+        <!-- Users Galaxy View -->
+        <div id="users-view" class="view active">
+            <button id="rajat-admin-btn" class="user-node admin-node">Rajat</button>
+            <div class="user-nodes-container">
+                <button class="user-node">Mukesh</button>
+                <button class="user-node">Piyush</button>
+                <button class="user-node">Chandrakanta</button>
+                <button class="user-node">Ganesh</button>
+                <button class="user-node">Devbrat</button>
+                <button class="user-node">Usman</button>
+            </div>
+        </div>
+
+        <!-- Intro View -->
+        <div id="intro-view" class="view">
+            <div class="milky-way-bg"></div>
+        </div>
+
+        <!-- Calendar View -->
+        <div id="calendar-view" class="view">
+            <div class="calendar-wrapper">
+                <button id="back-to-users-btn" class="icon-text-btn back-to-universe-btn" aria-label="Back to Universe">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Universe
+                </button>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button id="prev-month" class="icon-btn" aria-label="Previous Month">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <h2 id="month-year-display">Month Year</h2>
+                        <button id="next-month" class="icon-btn" aria-label="Next Month">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div id="calendar-grid" class="calendar-grid">
+                        <!-- Days injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Calendar View -->
+        <div id="admin-calendar-view" class="view">
+            <div class="calendar-wrapper">
+                <button id="admin-back-to-users-btn" class="icon-text-btn back-to-universe-btn"
+                    aria-label="Back to Universe">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Universe
+                </button>
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <button id="admin-prev-month" class="icon-btn" aria-label="Previous Month">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <h2 id="admin-month-year-display">Month Year</h2>
+                        <button id="admin-next-month" class="icon-btn" aria-label="Next Month">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="weekdays">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div id="admin-calendar-grid" class="calendar-grid">
+                        <!-- Days injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MindMap View -->
+        <div id="mindmap-view" class="view">
+            <div id="toolbar">
+                <button id="back-btn" class="icon-text-btn" aria-label="Back to Calendar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back
+                </button>
+                <div class="logo">MindMap: <span id="current-date-title"></span></div>
+                <div id="uat-metrics" class="uat-metrics-display">
+                    Mindfulness: <span id="metric-mind">0</span> |
+                    Clarity: <span id="metric-clarity">0</span> |
+                    Dev QA: <span id="metric-dev">0</span> |
+                    UAT: <span id="metric-uat">0</span>
+                </div>
+            </div>
+            <div id="board" aria-label="Whiteboard area">
+                <svg id="lines-layer" xmlns="http://www.w3.org/2000/svg"></svg>
+            </div>
+        </div>
+
+        <!-- Weekly Summary View -->
+        <div id="summary-view" class="view">
+            <div class="calendar-wrapper">
+                <button id="back-from-summary-btn" class="icon-text-btn back-to-universe-btn"
+                    aria-label="Back to Calendar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Calendar
+                </button>
+                <div class="calendar-container summary-container">
+                    <div class="calendar-header">
+                        <h2>Weekly Responses Summary</h2>
+                    </div>
+                    <div id="summary-content" class="summary-content-area">
+                        <!-- Responses injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Modal -->
+        <div id="password-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Admin Access</h3>
+                <input type="password" id="admin-password-input" placeholder="Enter password" autocomplete="off">
+                <div class="modal-actions">
+                    <button id="password-cancel-btn" class="icon-text-btn"
+                        style="border-color: var(--border-color);">Cancel</button>
+                    <button id="password-submit-btn" class="icon-text-btn"
+                        style="background: var(--primary-color);">Login</button>
+                </div>
+                <p id="password-error" class="error-text"
+                    style="display: none; color: #ff6b6b; margin-top: 10px; font-size: 0.9rem;">Incorrect password.</p>
+            </div>
+        </div>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
