@@ -1,6 +1,6 @@
 /* --- Selectors --- */
 const usersView = document.getElementById('users-view');
-const userNodes = document.querySelectorAll('.user-node:not(.admin-node)');
+let userNodes = []; // Will be populated in init()
 const introView = document.getElementById('intro-view');
 const calendarView = document.getElementById('calendar-view');
 const mindmapView = document.getElementById('mindmap-view');
@@ -35,6 +35,7 @@ const startUatBtn = document.getElementById('startUatBtn');
 const backBtn = document.getElementById('back-btn');
 const currentDateTitle = document.getElementById('current-date-title');
 
+
 /* --- Global State --- */
 let currentUser = null; // Currently selected user
 
@@ -62,12 +63,14 @@ let drawingEdgeElement = null;
 
 let nodeIdCounter = 0;
 
+
 function generateId() {
     return 'node-' + Date.now() + '-' + (++nodeIdCounter);
 }
 
 /* --- Initialization --- */
 function init() {
+
     // Hide Rajat's button if it is not Friday
     if (new Date().getDay() !== 5 && rajatAdminBtn) {
         rajatAdminBtn.style.display = 'none';
@@ -129,8 +132,10 @@ function init() {
     window.addEventListener('resize', () => requestAnimationFrame(updateAllEdges));
 
     // Generate Circle Positions for Users
-    const radius = 250;
+    userNodes = document.querySelectorAll('.user-node:not(.admin-node)');
+    const radius = 220; // Slightly smaller radius to ensure buttons stay within the 600px container
     const totalNodes = userNodes.length;
+    
     userNodes.forEach((btn, index) => {
         // Calculate angle for evenly spaced positioning (starting from top)
         const angle = (index / totalNodes) * (2 * Math.PI) - (Math.PI / 2);
@@ -921,6 +926,7 @@ function clearBoard() {
 }
 
 init();
+
 
 // --- UAT Logic ---
 let uatState = { mindfulness: 0, clarityLevel: 0, devQaLevel: 0, uatLevel: 0 };
