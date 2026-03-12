@@ -88,16 +88,16 @@ function init() {
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
     clearBtn.addEventListener('click', clearBoard);
-    if(startUatBtn) startUatBtn.addEventListener('click', startUATWorkflow);
+    if (startUatBtn) startUatBtn.addEventListener('click', startUATWorkflow);
     document.addEventListener('keydown', handleKeyDown);
-    if(backToUsersBtn) backToUsersBtn.addEventListener('click', backToUsers);
-    
-    if(adminPrevMonthBtn) adminPrevMonthBtn.addEventListener('click', () => changeAdminMonth(-1));
-    if(adminNextMonthBtn) adminNextMonthBtn.addEventListener('click', () => changeAdminMonth(1));
-    if(adminBackToUsersBtn) adminBackToUsersBtn.addEventListener('click', backToUsersFromAdminCalendar);
-    
+    if (backToUsersBtn) backToUsersBtn.addEventListener('click', backToUsers);
+
+    if (adminPrevMonthBtn) adminPrevMonthBtn.addEventListener('click', () => changeAdminMonth(-1));
+    if (adminNextMonthBtn) adminNextMonthBtn.addEventListener('click', () => changeAdminMonth(1));
+    if (adminBackToUsersBtn) adminBackToUsersBtn.addEventListener('click', backToUsersFromAdminCalendar);
+
     // Summary View (Rajat's Tool) Event Listeners
-    if(rajatAdminBtn) {
+    if (rajatAdminBtn) {
         rajatAdminBtn.addEventListener('click', () => {
             passwordInput.value = '';
             passwordError.style.display = 'none';
@@ -105,21 +105,21 @@ function init() {
             requestAnimationFrame(() => passwordInput.focus());
         });
     }
-    if(backFromSummaryBtn) {
+    if (backFromSummaryBtn) {
         backFromSummaryBtn.addEventListener('click', hideSummaryView);
     }
-    
+
     // Password Modal Listeners
-    if(passwordCancelBtn) {
+    if (passwordCancelBtn) {
         passwordCancelBtn.addEventListener('click', () => {
             passwordModal.classList.remove('active');
             passwordInput.blur();
         });
     }
-    if(passwordSubmitBtn) {
+    if (passwordSubmitBtn) {
         passwordSubmitBtn.addEventListener('click', handleAdminLogin);
     }
-    if(passwordInput) {
+    if (passwordInput) {
         passwordInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') handleAdminLogin();
             if (e.key === 'Escape') {
@@ -128,28 +128,28 @@ function init() {
             }
         });
     }
-    
+
     window.addEventListener('resize', () => requestAnimationFrame(updateAllEdges));
 
     // Generate Circle Positions for Users
     userNodes = document.querySelectorAll('.user-node:not(.admin-node)');
     const radius = 220; // Slightly smaller radius to ensure buttons stay within the 600px container
     const totalNodes = userNodes.length;
-    
+
     userNodes.forEach((btn, index) => {
         // Calculate angle for evenly spaced positioning (starting from top)
         const angle = (index / totalNodes) * (2 * Math.PI) - (Math.PI / 2);
-        
+
         // Convert polar coordinates to cartesian Cartesian
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
-        
+
         // CSS expects left/top percent or px from the 50% 50% mark
         // Calculating explicit left/top px values to ensure perfect absolute positioning
         // without relying on margins which can get crushed inside flex layouts
         const centerX = 300; // Half of .user-nodes-container flex width (600px)
-        const centerY = 300; 
-        
+        const centerY = 300;
+
         btn.style.left = `${centerX + x}px`;
         btn.style.top = `${centerY + y}px`;
 
@@ -166,14 +166,14 @@ function startMilkyWaySequence() {
     if (usersView) {
         usersView.classList.add('zoom-in');
         usersView.classList.remove('active');
-        
+
         // Immediately kick off the inner galaxy to make it look like continuous travel
-        if(introView) {
-            introView.classList.add('active'); 
+        if (introView) {
+            introView.classList.add('active');
             setTimeout(() => {
                 introView.classList.add('zoom-in');
             }, 600); // Wait for the outer galaxy to clear space
-            
+
             setTimeout(() => {
                 calendarView.classList.add('active');
             }, 1800);
@@ -191,14 +191,14 @@ function startMilkyWaySequence() {
 function backToUsers() {
     // Hide calendar
     calendarView.classList.remove('active');
-    
+
     // Reset the galaxies perfectly to jump backwards
-    if(introView) {
+    if (introView) {
         introView.classList.remove('zoom-in');
         introView.classList.remove('active');
     }
-    
-    if(usersView) {
+
+    if (usersView) {
         usersView.classList.remove('zoom-in');
         usersView.classList.add('active');
     }
@@ -227,12 +227,12 @@ function handleAdminLogin() {
 }
 
 function showAdminCalendarView() {
-    if(usersView) {
+    if (usersView) {
         usersView.classList.remove('active');
         usersView.classList.add('zoom-in');
     }
-    
-    if(adminCalendarView) {
+
+    if (adminCalendarView) {
         renderAdminCalendar();
         setTimeout(() => {
             adminCalendarView.classList.add('active');
@@ -241,57 +241,57 @@ function showAdminCalendarView() {
 }
 
 function backToUsersFromAdminCalendar() {
-    if(adminCalendarView) {
+    if (adminCalendarView) {
         adminCalendarView.classList.remove('active');
     }
-    if(usersView) {
+    if (usersView) {
         usersView.classList.remove('zoom-in');
         usersView.classList.add('active');
     }
 }
 
 function renderAdminCalendar() {
-    if(!adminCalendarGrid) return;
+    if (!adminCalendarGrid) return;
     adminCalendarGrid.innerHTML = '';
-    
+
     const year = adminCurrentDate.getFullYear();
     const month = adminCurrentDate.getMonth();
-    
+
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    
+
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    if(adminMonthYearDisplay) adminMonthYearDisplay.textContent = `${monthNames[month]} ${year}`;
-    
+    if (adminMonthYearDisplay) adminMonthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < firstDay.getDay(); i++) {
         const emptyDiv = document.createElement('div');
         emptyDiv.className = 'calendar-day empty';
         fragment.appendChild(emptyDiv);
     }
-    
+
     const today = new Date();
-    today.setHours(0,0,0,0);
-    
+    today.setHours(0, 0, 0, 0);
+
     for (let i = 1; i <= lastDay.getDate(); i++) {
         const dayDiv = document.createElement('div');
         dayDiv.className = 'calendar-day';
         dayDiv.textContent = i;
-        
+
         const dateObj = new Date(year, month, i);
-        const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
         if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
             dayDiv.classList.add('today');
         }
-        
+
         // Only allow clicking if it's a Friday
         if (dateObj.getDay() === 5) {
             dayDiv.addEventListener('click', () => showSummaryView(dateStr));
         } else {
             dayDiv.classList.add('disabled-day');
         }
-        
+
         fragment.appendChild(dayDiv);
     }
     adminCalendarGrid.appendChild(fragment);
@@ -303,23 +303,23 @@ function changeAdminMonth(delta) {
 }
 
 function showSummaryView(fridayDateStr) {
-    if(adminCalendarView) {
+    if (adminCalendarView) {
         adminCalendarView.classList.remove('active');
         adminCalendarView.classList.add('zoomed-in');
     }
-    
-    if(summaryView) {
-        summaryContentArea.innerHTML = ''; 
-        
+
+    if (summaryView) {
+        summaryContentArea.innerHTML = '';
+
         const end = new Date(fridayDateStr);
         const users = Array.from(userNodes).map(n => n.textContent.trim());
-        
+
         const fragment = document.createDocumentFragment();
         let anyActivityFound = false;
 
         users.forEach(user => {
             const records = [];
-            
+
             for (let i = 6; i >= 0; i--) {
                 const target = new Date(end);
                 target.setDate(end.getDate() - i);
@@ -327,26 +327,26 @@ function showSummaryView(fridayDateStr) {
                 const m = String(target.getMonth() + 1).padStart(2, '0');
                 const d = String(target.getDate()).padStart(2, '0');
                 const dateStr = `${y}-${m}-${d}`;
-                
+
                 const saved = localStorage.getItem(`mindmap_${user}_${dateStr}`);
                 if (saved) {
                     try {
                         const parsed = JSON.parse(saved);
                         const meaningfulNodes = parsed.nodes.filter(n => n.text.trim().length > 0 && !n.text.includes("What are you working on today?"));
-                        
-                        if(meaningfulNodes.length > 0) {
+
+                        if (meaningfulNodes.length > 0) {
                             records.push({ dateStr, nodes: meaningfulNodes });
                         }
-                    } catch(e) {}
+                    } catch (e) { }
                 }
             }
-            
+
             if (records.length > 0) {
                 anyActivityFound = true;
                 const card = document.createElement('div');
                 card.className = 'summary-card';
                 card.innerHTML = `<h3 style="color:var(--primary-color)">${user}'s Week ending on ${fridayDateStr}</h3><hr/>`;
-                
+
                 records.forEach(record => {
                     card.innerHTML += `<p><strong style="color:var(--text-muted); font-size: 0.8em; text-transform:uppercase; letter-spacing:1px">${record.dateStr}</strong></p>`;
                     record.nodes.forEach((n) => {
@@ -358,13 +358,13 @@ function showSummaryView(fridayDateStr) {
                 fragment.appendChild(card);
             }
         });
-        
+
         if (!anyActivityFound) {
             summaryContentArea.innerHTML = `<div class="summary-card"><p>No meaningful activity found for this week.</p></div>`;
         } else {
             summaryContentArea.appendChild(fragment);
         }
-        
+
         setTimeout(() => {
             summaryView.classList.add('active');
         }, 300);
@@ -372,8 +372,8 @@ function showSummaryView(fridayDateStr) {
 }
 
 function hideSummaryView() {
-    if(summaryView) summaryView.classList.remove('active');
-    if(adminCalendarView) {
+    if (summaryView) summaryView.classList.remove('active');
+    if (adminCalendarView) {
         adminCalendarView.classList.remove('zoomed-in');
         adminCalendarView.classList.add('active');
     }
@@ -382,16 +382,16 @@ function hideSummaryView() {
 /* --- Calendar Logic --- */
 function renderCalendar() {
     calendarGrid.innerHTML = '';
-    
+
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    
+
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    
+
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
-    
+
     // Fill empty days before 1st of month
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < firstDay.getDay(); i++) {
@@ -399,37 +399,37 @@ function renderCalendar() {
         emptyDiv.className = 'calendar-day empty';
         fragment.appendChild(emptyDiv);
     }
-    
+
     const today = new Date();
-    
+
     // Fill days of the month
     for (let i = 1; i <= lastDay.getDate(); i++) {
         const dayDiv = document.createElement('div');
         dayDiv.className = 'calendar-day';
         dayDiv.textContent = i;
-        
-        const dateStr = `${year}-${String(month+1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        
+
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+
         let isToday = false;
         if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
             isToday = true;
             dayDiv.classList.add('today');
         }
-        
+
         // Check if data exists
         if (localStorage.getItem(`mindmap_${currentUser}_${dateStr}`)) {
             const dot = document.createElement('div');
             dot.className = 'has-data-dot';
             dayDiv.appendChild(dot);
         }
-        
+
         // Make non-today dates uneditable (disabled in calendar)
         if (isToday) {
             dayDiv.addEventListener('click', () => openMindMap(dateStr));
         } else {
             dayDiv.classList.add('disabled-day');
         }
-        
+
         fragment.appendChild(dayDiv);
     }
     calendarGrid.appendChild(fragment);
@@ -446,9 +446,9 @@ function openMindMap(dateStr) {
     const dateObj = new Date(dateStr + 'T00:00:00'); // Parse local time properly
     const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
     currentDateTitle.textContent = dateObj.toLocaleDateString(undefined, options);
-    
+
     loadMindMapState(dateStr);
-    
+
     calendarView.classList.remove('active');
     calendarView.classList.add('zoomed-in');
     mindmapView.classList.add('active');
@@ -456,7 +456,7 @@ function openMindMap(dateStr) {
 
 function closeMindMap() {
     saveMindMapState(); // Save before leaving
-    
+
     // Clear DOM state
     Array.from(nodes.keys()).forEach(id => removeNodeFromDOM(id));
     edges.forEach(e => e.element.remove());
@@ -467,9 +467,9 @@ function closeMindMap() {
         activeInput.remove();
         activeInput = null;
     }
-    
+
     selectedDateString = null;
-    
+
     mindmapView.classList.remove('active');
     calendarView.classList.remove('zoomed-in');
     calendarView.classList.add('active');
@@ -479,34 +479,34 @@ function closeMindMap() {
 /* --- State Management --- */
 function saveMindMapState() {
     if (!selectedDateString) return;
-    
+
     // Only save if we actually have nodes, else remove item
     if (nodes.size === 0) {
         localStorage.removeItem(`mindmap_${currentUser}_${selectedDateString}`);
         return;
     }
-    
+
     const state = {
         nodes: Array.from(nodes.values()).map(n => ({ id: n.id, text: n.text, x: n.x, y: n.y, isUAT: n.isUAT })),
         edges: edges.map(e => ({ source: e.source, target: e.target })),
         uatState: typeof uatState !== 'undefined' ? uatState : { mindfulness: 0, clarityLevel: 0, devQaLevel: 0, uatLevel: 0 }
     };
-    
+
     localStorage.setItem(`mindmap_${currentUser}_${selectedDateString}`, JSON.stringify(state));
 }
 
 function loadMindMapState(dateStr) {
     const saved = localStorage.getItem(`mindmap_${currentUser}_${dateStr}`);
-    
+
     if (saved) {
         try {
             const state = JSON.parse(saved);
             if (state.uatState) uatState = state.uatState;
             else resetUatState();
-            
+
             state.nodes.forEach(n => createNode(n.text || 'FORM_BLANK', n.x, n.y, null, n.id));
             state.edges.forEach(e => createEdge(e.source, e.target));
-        } catch(e) {
+        } catch (e) {
             console.error("Failed to load map state", e);
             setupNewMap();
         }
@@ -543,13 +543,13 @@ function handlePointerDown(e) {
     if (target.classList.contains('connector')) {
         isDrawingEdge = true;
         edgeSourceId = target.dataset.nodeId;
-        
+
         drawingEdgeElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         drawingEdgeElement.classList.add('connection-line', 'drawing');
         linesLayer.appendChild(drawingEdgeElement);
-        
+
         updateDrawingEdge(x, y);
-        
+
         target.setPointerCapture(e.pointerId);
         e.stopPropagation();
         return;
@@ -560,16 +560,16 @@ function handlePointerDown(e) {
     if (nodeEl && !isInteractive) {
         const id = nodeEl.dataset.id;
         selectNode(id, e.shiftKey);
-        
+
         isDraggingNode = true;
         draggedNodeId = id;
         dragStartX = x;
         dragStartY = y;
-        
+
         const node = nodes.get(id);
         nodeStartX = node.x;
         nodeStartY = node.y;
-        
+
         nodeEl.classList.add('dragging');
         nodeEl.setPointerCapture(e.pointerId);
         e.stopPropagation();
@@ -590,10 +590,10 @@ function handlePointerMove(e) {
         const node = nodes.get(draggedNodeId);
         const dx = x - dragStartX;
         const dy = y - dragStartY;
-        
+
         node.x = nodeStartX + dx;
         node.y = nodeStartY + dy;
-        
+
         updateNodePosition(node);
         updateEdgesForNode(draggedNodeId);
     } else if (isDrawingEdge) {
@@ -611,18 +611,18 @@ function handlePointerUp(e) {
         const nodeEl = nodes.get(draggedNodeId).element;
         isDraggingNode = false;
         nodeEl.classList.remove('dragging');
-        try { nodeEl.releasePointerCapture(e.pointerId); } catch(err) {}
+        try { nodeEl.releasePointerCapture(e.pointerId); } catch (err) { }
         draggedNodeId = null;
         saveMindMapState(); // Save purely node dragging position changes.
     } else if (isDrawingEdge) {
         isDrawingEdge = false;
-        
+
         drawingEdgeElement.style.display = 'none';
         const dropTarget = document.elementFromPoint(e.clientX, e.clientY);
         drawingEdgeElement.style.display = 'block';
-        
+
         let targetNodeEl = dropTarget ? dropTarget.closest('.node') : null;
-        
+
         if (targetNodeEl) {
             const targetId = targetNodeEl.dataset.id;
             if (targetId !== edgeSourceId) {
@@ -633,12 +633,12 @@ function handlePointerUp(e) {
             const input = createNewTextInput(x, y);
             input.dataset.sourceId = edgeSourceId;
         }
-        
+
         drawingEdgeElement.remove();
         drawingEdgeElement = null;
         edgeSourceId = null;
-        
-        try { target.releasePointerCapture(e.pointerId); } catch(err) {}
+
+        try { target.releasePointerCapture(e.pointerId); } catch (err) { }
     }
 }
 
@@ -646,10 +646,10 @@ function updateDrawingEdge(targetX, targetY) {
     if (!drawingEdgeElement || !edgeSourceId) return;
     const sourceNode = nodes.get(edgeSourceId);
     if (!sourceNode) return;
-    
+
     const startX = sourceNode.x + (sourceNode.element.offsetWidth / 2);
     const startY = sourceNode.y;
-    
+
     const curveDistance = Math.max(Math.abs(targetX - startX) * 0.5, 50);
     const path = `M ${startX} ${startY} C ${startX + curveDistance} ${startY}, ${targetX - curveDistance} ${targetY}, ${targetX} ${targetY}`;
     drawingEdgeElement.setAttribute('d', path);
@@ -671,10 +671,10 @@ function updateEdgePath(edge) {
     const source = nodes.get(edge.source);
     const target = nodes.get(edge.target);
     if (!source || !target) return;
-    
+
     const sourceEl = source.element;
     const targetEl = target.element;
-    
+
     let startX = source.x;
     let startY = source.y;
     let endX = target.x;
@@ -718,14 +718,14 @@ function updateEdgePath(edge) {
 
 function createEdge(sourceId, targetId) {
     if (edges.some(e => e.source === sourceId && e.target === targetId)) return;
-    
+
     const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     pathElement.classList.add('connection-line');
     linesLayer.appendChild(pathElement);
-    
+
     const edge = { source: sourceId, target: targetId, element: pathElement };
     edges.push(edge);
-    
+
     requestAnimationFrame(() => updateEdgePath(edge));
 }
 
@@ -753,10 +753,10 @@ function createNewTextInput(x, y, initialText = '', replaceNodeId = null) {
     input.contentEditable = "true";
     input.className = 'text-input';
     input.textContent = initialText;
-    
+
     input.style.left = `${x}px`;
     input.style.top = `${y}px`;
-    
+
     if (replaceNodeId) {
         input.dataset.replaceId = replaceNodeId;
     }
@@ -771,13 +771,13 @@ function createNewTextInput(x, y, initialText = '', replaceNodeId = null) {
             input.blur();
         }
         if (e.key === 'Escape') {
-            if (!replaceNodeId) input.textContent = ''; 
+            if (!replaceNodeId) input.textContent = '';
             input.blur();
         }
     });
 
     board.appendChild(input);
-    
+
     requestAnimationFrame(() => {
         input.focus();
         if (initialText) {
@@ -789,7 +789,7 @@ function createNewTextInput(x, y, initialText = '', replaceNodeId = null) {
             sel.addRange(range);
         }
     });
-    
+
     activeInput = input;
     clearSelection();
     return input;
@@ -797,13 +797,13 @@ function createNewTextInput(x, y, initialText = '', replaceNodeId = null) {
 
 function finalizeInput(input) {
     if (!input || !input.parentNode) return;
-    
+
     const text = input.textContent.trim();
     const x = parseFloat(input.style.left);
     const y = parseFloat(input.style.top);
     const replaceId = input.dataset.replaceId;
-    const sourceId = input.dataset.sourceId; 
-    
+    const sourceId = input.dataset.sourceId;
+
     input.remove();
     if (activeInput === input) {
         activeInput = null;
@@ -818,7 +818,7 @@ function finalizeInput(input) {
                     .forEach(n => n.remove());
                 node.element.insertBefore(document.createTextNode(text), node.element.firstChild);
                 node.text = text;
-                requestAnimationFrame(() => updateEdgesForNode(replaceId)); 
+                requestAnimationFrame(() => updateEdgesForNode(replaceId));
                 saveMindMapState();
             }
         } else {
@@ -826,50 +826,50 @@ function finalizeInput(input) {
             saveMindMapState();
         }
     } else if (replaceId) {
-         deleteNode(replaceId);
-         saveMindMapState();
+        deleteNode(replaceId);
+        saveMindMapState();
     }
 }
 
 function createNode(text, x, y, connectFromId = null, forcedId = null) {
     const id = forcedId || generateId();
-    
+
     const el = document.createElement('div');
     el.className = 'node';
     el.dataset.id = id;
-    
+
     el.appendChild(document.createTextNode(text));
-    
+
     const connector = document.createElement('div');
     connector.className = 'connector';
     connector.innerHTML = '+';
     connector.dataset.nodeId = id;
     el.appendChild(connector);
-    
+
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
-    
+
     el.addEventListener('dblclick', (e) => {
         if (e.target.classList.contains('connector')) return;
-        
+
         const node = nodes.get(id);
         const currentText = node.text;
-            
+
         createNewTextInput(node.x, node.y, currentText, id);
         e.stopPropagation();
     });
-    
+
     board.appendChild(el);
-    
+
     const node = { id, element: el, x, y, text };
     nodes.set(id, node);
-    
+
     selectNode(id, false);
-    
+
     if (connectFromId) {
         createEdge(connectFromId, id);
     }
-    
+
     return id;
 }
 
@@ -925,11 +925,11 @@ function clearBoard() {
     }
 }
 
-init();
 
 
 // --- UAT Logic ---
 let uatState = { mindfulness: 0, clarityLevel: 0, devQaLevel: 0, uatLevel: 0 };
+init();
 const JARGON = ["api", "database", "endpoint", "refactor", "server", "json", "sql", "latency", "frontend", "backend", "deployment pipeline", "repo", "commit"];
 
 function resetUatState() {
@@ -1037,16 +1037,16 @@ const UAT_STEPS = {
         type: 'terminal'
     },
     'NODE_6': {
-         question: "Since Dev QA tested it, are you just duplicating work?",
-         type: 'radio',
-         options: [
-             "Yes, I am double-checking their exact steps to be safe.",
-             "No, I am testing entirely different behavioral aspects."
-         ],
-         process: (idx) => {
-             if (idx === 0) { uatState.devQaLevel += 3; uatState.mindfulness -= 1; uatState.uatLevel -= 2; return 'NODE_6A'; }
-             uatState.mindfulness += 1; uatState.uatLevel += 1; return 'NODE_7';
-         }
+        question: "Since Dev QA tested it, are you just duplicating work?",
+        type: 'radio',
+        options: [
+            "Yes, I am double-checking their exact steps to be safe.",
+            "No, I am testing entirely different behavioral aspects."
+        ],
+        process: (idx) => {
+            if (idx === 0) { uatState.devQaLevel += 3; uatState.mindfulness -= 1; uatState.uatLevel -= 2; return 'NODE_6A'; }
+            uatState.mindfulness += 1; uatState.uatLevel += 1; return 'NODE_7';
+        }
     },
     'NODE_6A': {
         question: "Error: Duplication is a waste of company time. QA tested if the engine turns on. Your job is to test if the car drives in the snow. Do not repeat functional checks.",
@@ -1105,8 +1105,8 @@ const UAT_STEPS = {
         type: 'checkbox',
         options: ["I will account for external variables"],
         process: (checkedIndices) => {
-             if (checkedIndices.length === 0) return 'NODE_8A';
-             return 'NODE_9';
+            if (checkedIndices.length === 0) return 'NODE_8A';
+            return 'NODE_9';
         }
     },
     'NODE_9': {
@@ -1118,11 +1118,11 @@ const UAT_STEPS = {
             } else if (uatState.mindfulness <= 1) {
                 return "UAT Request Denied. You have not demonstrated a clear understanding of the business risk or the external environment. Speak with the Product Owner before proceeding.";
             } else if (uatState.clarityLevel <= 0) {
-                 return "UAT Request Denied. You cannot articulate the feature's value without relying on technical jargon. If you cannot explain it simply, you cannot test it from a user's perspective.";
+                return "UAT Request Denied. You cannot articulate the feature's value without relying on technical jargon. If you cannot explain it simply, you cannot test it from a user's perspective.";
             } else if (uatState.uatLevel >= 4 && uatState.mindfulness >= 3) {
-                 return "Testing Strategy Approved. You have successfully demonstrated a high UAT Level, focus on user workflow, business impact, and systemic risks. You are authorized to begin UAT Execution.";
+                return "Testing Strategy Approved. You have successfully demonstrated a high UAT Level, focus on user workflow, business impact, and systemic risks. You are authorized to begin UAT Execution.";
             } else {
-                 return "UAT Request Pending. Your strategy is functional but lacks depth. Please review your scenarios with the UAT Lead for final sign-off.";
+                return "UAT Request Pending. Your strategy is functional but lacks depth. Please review your scenarios with the UAT Lead for final sign-off.";
             }
         }
     }
@@ -1131,8 +1131,8 @@ const UAT_STEPS = {
 function startUATWorkflow() {
     resetUatState();
     updateUatMetricsUI();
-    const startX = window.innerWidth / 2 - 300 + (Math.random()*50 - 25);
-    const startY = window.innerHeight / 2 - 200 + (Math.random()*50 - 25);
+    const startX = window.innerWidth / 2 - 300 + (Math.random() * 50 - 25);
+    const startY = window.innerHeight / 2 - 200 + (Math.random() * 50 - 25);
     createUATQuestionNode('NODE_1', startX, startY, null);
     saveMindMapState();
 }
@@ -1181,7 +1181,7 @@ function createUATAnswerNode(stepId, x, y, connectFromId) {
         };
         el.appendChild(textarea);
         el.appendChild(btn);
-        answerContent = textarea; 
+        answerContent = textarea;
     } else if (step.type === 'radio') {
         step.options.forEach((opt, idx) => {
             const label = document.createElement('label');
@@ -1241,7 +1241,7 @@ function createUATAnswerNode(stepId, x, y, connectFromId) {
     if (connectFromId) createEdge(connectFromId, aNodeId);
 
     if (answerContent && answerContent.focus) {
-         setTimeout(() => answerContent.focus(), 100);
+        setTimeout(() => answerContent.focus(), 100);
     }
 
     return aNodeId;
@@ -1252,10 +1252,10 @@ function submitUATAnswer(stepId, answerNodeId, value) {
     const nextStepId = step.process(value);
 
     const aNode = nodes.get(answerNodeId);
-    
-    aNode.element.innerHTML = ''; 
+
+    aNode.element.innerHTML = '';
     aNode.element.classList.remove('uat-answer-node');
-    
+
     let displayValue = '';
     if (step.type === 'textarea') displayValue = value;
     else if (step.type === 'radio') displayValue = step.options[value];
@@ -1285,11 +1285,11 @@ function submitUATAnswer(stepId, answerNodeId, value) {
     const nextStep = UAT_STEPS[nextStepId];
     if (nextStep) {
         if (nextStep.type === 'terminal') {
-             createNode(nextStep.question, aNode.x, aNode.y + 150, aNode.id);
+            createNode(nextStep.question, aNode.x, aNode.y + 150, aNode.id);
         } else if (nextStep.type === 'eval') {
-             createNode(nextStep.process(), aNode.x, aNode.y + 150, aNode.id);
+            createNode(nextStep.process(), aNode.x, aNode.y + 150, aNode.id);
         } else {
-             createUATQuestionNode(nextStepId, aNode.x, aNode.y + 150, aNode.id);
+            createUATQuestionNode(nextStepId, aNode.x, aNode.y + 150, aNode.id);
         }
         saveMindMapState();
     }

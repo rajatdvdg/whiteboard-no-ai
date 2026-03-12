@@ -3,20 +3,28 @@
     --bg-color: #1e1e1e;
     --text-main: #dcddde;
     --text-muted: #8b8b93;
-    --primary-color: #5c6bc0; /* Classic, classy muted indigo/blue */
+    --primary-color: #5c6bc0;
+    /* Classic, classy muted indigo/blue */
     --primary-hover: #7986cb;
-    --surface-0: #1e1e1e;    /* Deepest background */
-    --surface-1: #252526;    /* Slightly elevated cards */
-    --surface-2: #2d2d30;    /* Toolbar, active items */
-    --border-color: #3f3f4e; /* Subtle borders */
-    --line-color: #52525e;   /* Mindmap connection lines */
+    --surface-0: #1e1e1e;
+    /* Deepest background */
+    --surface-1: #252526;
+    /* Slightly elevated cards */
+    --surface-2: #2d2d30;
+    /* Toolbar, active items */
+    --border-color: #3f3f4e;
+    /* Subtle borders */
+    --line-color: #52525e;
+    /* Mindmap connection lines */
     --toolbar-blur-bg: rgba(30, 30, 30, 0.85);
-    
+    --cal-bg: #252526;
+    --text-color: #dcddde;
     /* Calendar specifics */
     --cal-grid-gap: 8px;
     --cal-day-bg: #252526;
     --cal-day-hover: #2d2d30;
-    --cal-today-bg: rgba(92, 107, 192, 0.15); /* Tinted indigo for today */
+    --cal-today-bg: rgba(92, 107, 192, 0.15);
+    /* Tinted indigo for today */
     --cal-today-border: #5c6bc0;
 }
 
@@ -24,7 +32,8 @@
     box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -57,17 +66,20 @@ body, html {
     transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-#calendar-view, #admin-calendar-view {
+#calendar-view,
+#admin-calendar-view {
     transform: scale(0.85);
 }
 
-#calendar-view.active, #admin-calendar-view.active {
+#calendar-view.active,
+#admin-calendar-view.active {
     opacity: 1;
     pointer-events: all;
     transform: scale(1);
 }
 
-#calendar-view.zoomed-in, #admin-calendar-view.zoomed-in {
+#calendar-view.zoomed-in,
+#admin-calendar-view.zoomed-in {
     opacity: 0;
     pointer-events: none;
     transform: scale(1.3);
@@ -107,7 +119,8 @@ body, html {
 
 .user-nodes-container {
     position: relative;
-    width: 600px; /* Space for the circle */
+    width: 600px;
+    /* Space for the circle */
     height: 600px;
 }
 
@@ -128,7 +141,7 @@ body, html {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .user-node:hover {
@@ -136,7 +149,7 @@ body, html {
     border-color: rgba(255, 255, 255, 0.3);
     /* Scale gracefully without shifting the base margin calculations */
     transform: translate(-50%, -50%) scale(1.05);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
 }
 
 .admin-node {
@@ -146,9 +159,11 @@ body, html {
     left: auto;
     bottom: auto;
     transform: none;
-    background: rgba(92, 107, 192, 0.3); /* Make Rajat stand out slightly matching the primary theme */
+    background: rgba(92, 107, 192, 0.3);
+    /* Make Rajat stand out slightly matching the primary theme */
     border-color: rgba(92, 107, 192, 0.6);
 }
+
 .admin-node:hover {
     transform: scale(1.05);
 }
@@ -159,7 +174,8 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 1.5s ease 1.8s; /* Fades out nicely covering the transition */
+    transition: opacity 1.5s ease 1.8s;
+    /* Fades out nicely covering the transition */
 }
 
 #intro-view.active {
@@ -174,7 +190,8 @@ body, html {
     background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?q=80&w=3000&auto=format&fit=crop') center/cover no-repeat;
     opacity: 1;
     transition: transform 3.5s cubic-bezier(0.5, 0, 0.1, 1), opacity 1s ease 2s;
-    transform-origin: 52% 48%; /* A bright star anchor in this image */
+    transform-origin: 52% 48%;
+    /* A bright star anchor in this image */
 }
 
 #intro-view.zoom-in {
@@ -183,8 +200,10 @@ body, html {
 }
 
 #intro-view.zoom-in .milky-way-bg {
-    transform: scale(25); /* Monumental zoom into the star */
-    opacity: 0; /* Fade out inner light into the calendar */
+    transform: scale(25);
+    /* Monumental zoom into the star */
+    opacity: 0;
+    /* Fade out inner light into the calendar */
 }
 
 /* --- Calendar Styles --- */
@@ -295,13 +314,16 @@ body, html {
     align-items: center;
     justify-content: center;
 }
+
 #summary-view.active {
     opacity: 1;
     pointer-events: all;
 }
+
 .summary-container {
     padding: 30px;
 }
+
 .summary-content-area {
     margin-top: 20px;
     flex: 1;
@@ -311,27 +333,31 @@ body, html {
     gap: 16px;
     padding-right: 10px;
 }
+
 .summary-card {
-    background: rgba(0,0,0,0.2);
-    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     padding: 16px;
     color: var(--text-main);
     font-size: 0.95rem;
     line-height: 1.5;
 }
+
 .summary-card h3 {
     margin: 0 0 10px 0;
     font-size: 1rem;
     color: var(--primary-color);
 }
+
 .summary-card p {
     margin: 4px 0;
     white-space: pre-wrap;
 }
+
 .summary-card hr {
     border: none;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin: 12px 0;
 }
 
@@ -393,7 +419,8 @@ body, html {
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
     padding: 8px 16px;
-    border-radius: 8px; /* Square/classy look like Obsidian toolbars */
+    border-radius: 8px;
+    /* Square/classy look like Obsidian toolbars */
     display: flex;
     align-items: center;
     gap: 20px;
@@ -413,7 +440,8 @@ body, html {
 
 #current-date-title {
     color: var(--primary-hover);
-    font-family: monospace; /* Developer/Obsidian aesthetic */
+    font-family: monospace;
+    /* Developer/Obsidian aesthetic */
     font-size: 0.85rem;
 }
 
@@ -545,8 +573,15 @@ body, html {
 }
 
 @keyframes popIn {
-    from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
 }
 
 .node:hover {
@@ -589,7 +624,8 @@ body, html {
     z-index: 11;
 }
 
-.node.selected .connector, .node:hover .connector {
+.node.selected .connector,
+.node:hover .connector {
     opacity: 1;
     pointer-events: all;
 }
@@ -614,7 +650,7 @@ body, html {
     word-break: break-word;
     max-width: 300px;
     border: 1px solid var(--primary-color);
-    box-shadow: 0 0 0 1px var(--primary-color), 0 8px 24px rgba(0,0,0,0.5);
+    box-shadow: 0 0 0 1px var(--primary-color), 0 8px 24px rgba(0, 0, 0, 0.5);
     border-radius: 6px;
     z-index: 1000;
     outline: none;
@@ -644,10 +680,12 @@ body, html {
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
+
 .modal-overlay.active {
     opacity: 1;
     pointer-events: all;
 }
+
 .modal-content {
     background: var(--cal-bg);
     border: 1px solid var(--border-color);
@@ -657,19 +695,22 @@ body, html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
     transform: scale(0.95);
     transition: transform 0.3s ease;
 }
+
 .modal-overlay.active .modal-content {
     transform: scale(1);
 }
+
 .modal-content h3 {
     margin-top: 0;
     margin-bottom: 20px;
     color: var(--text-main);
     font-size: 1.2rem;
 }
+
 .modal-content input {
     width: 100%;
     background: rgba(255, 255, 255, 0.05);
@@ -683,14 +724,17 @@ body, html {
     transition: border-color 0.2s ease;
     text-align: center;
 }
+
 .modal-content input:focus {
     border-color: var(--primary-color);
 }
+
 .modal-actions {
     display: flex;
     gap: 10px;
     width: 100%;
 }
+
 .modal-actions button {
     flex: 1;
     justify-content: center;
