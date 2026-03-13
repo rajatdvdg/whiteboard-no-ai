@@ -93,6 +93,7 @@ html {
     opacity: 1;
     pointer-events: all;
     transform: scale(1);
+    overflow: auto;
 }
 
 /* --- Users View Styles --- */
@@ -502,10 +503,9 @@ html {
 }
 
 #board {
-    width: 100vw;
-    height: 100vh;
+    width: 3000px;
+    height: 3000px;
     position: relative;
-    cursor: grab;
 }
 
 #board:active {
@@ -746,11 +746,24 @@ html {
     font-weight: 500;
     color: var(--text-color);
     background: rgba(255, 255, 255, 0.05);
-    padding: 6px 12px;
-    border-radius: 6px;
+    padding: 6px 16px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 16px;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-right: 1px solid var(--border-color);
+}
+
+.metric-item:last-child {
+    border-right: none;
 }
 
 .uat-metrics-display span {

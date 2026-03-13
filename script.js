@@ -88,7 +88,6 @@ function init() {
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
     clearBtn.addEventListener('click', clearBoard);
-    if (startUatBtn) startUatBtn.addEventListener('click', startUATWorkflow);
     document.addEventListener('keydown', handleKeyDown);
     if (backToUsersBtn) backToUsersBtn.addEventListener('click', backToUsers);
 
@@ -504,8 +503,19 @@ function loadMindMapState(dateStr) {
             if (state.uatState) uatState = state.uatState;
             else resetUatState();
 
-            state.nodes.forEach(n => createNode(n.text || 'FORM_BLANK', n.x, n.y, null, n.id));
-            state.edges.forEach(e => createEdge(e.source, e.target));
+            // Filter out any nodes that were in UAT_FORM state (incomplete)
+            // or label them better. User wants to "remove" them.
+            state.nodes.forEach(n => {
+                if (n.text !== 'UAT_FORM') {
+                    createNode(n.text || 'FORM_BLANK', n.x, n.y, null, n.id);
+                }
+            });
+            state.edges.forEach(e => {
+                // Only create edge if both source and target exist
+                if (nodes.has(e.source) && nodes.has(e.target)) {
+                    createEdge(e.source, e.target);
+                }
+            });
         } catch (e) {
             console.error("Failed to load map state", e);
             setupNewMap();
@@ -513,7 +523,6 @@ function loadMindMapState(dateStr) {
     } else {
         setupNewMap();
     }
-    saveMindMapState();
 }
 
 function setupNewMap() {
@@ -906,7 +915,14 @@ function deleteNode(id) {
 
 function handleKeyDown(e) {
     if (!mindmapView.classList.contains('active')) return;
-    if ((e.key === 'Delete' || e.key === 'Backspace') && !activeInput && selectedNodes.size > 0) {
+    
+    // Don't trigger delete if user is typing in an input or textarea
+    const isEditing = document.activeElement && 
+                     (document.activeElement.tagName === 'INPUT' || 
+                      document.activeElement.tagName === 'TEXTAREA' || 
+                      document.activeElement.isContentEditable);
+                      
+    if ((e.key === 'Delete' || e.key === 'Backspace') && !activeInput && !isEditing && selectedNodes.size > 0) {
         selectedNodes.forEach(id => deleteNode(id));
         saveMindMapState();
         e.preventDefault();
