@@ -486,7 +486,7 @@ function saveMindMapState() {
     }
 
     const state = {
-        nodes: Array.from(nodes.values()).map(n => ({ id: n.id, text: n.text, x: n.x, y: n.y, isUAT: n.isUAT })),
+        nodes: Array.from(nodes.values()).map(n => ({ id: n.id, text: n.text, x: n.x, y: n.y, isUAT: n.isUAT, stepId: n.stepId })),
         edges: edges.map(e => ({ source: e.source, target: e.target })),
         uatState: typeof uatState !== 'undefined' ? uatState : { mindfulness: 0, clarityLevel: 0, devQaLevel: 0, uatLevel: 0 }
     };
@@ -502,16 +502,22 @@ function loadMindMapState(dateStr) {
             const state = JSON.parse(saved);
             if (state.uatState) uatState = state.uatState;
             else resetUatState();
+            
+            updateUatMetricsUI();
 
-            // Filter out any nodes that were in UAT_FORM state (incomplete)
-            // or label them better. User wants to "remove" them.
+            if (!state.nodes || state.nodes.length === 0) {
+                setupNewMap();
+                return;
+            }
+
             state.nodes.forEach(n => {
-                if (n.text !== 'UAT_FORM') {
+                if (n.isUAT && n.stepId) {
+                    createUATAnswerNode(n.stepId, n.x, n.y, null, n.id);
+                } else if (n.text !== 'UAT_FORM') {
                     createNode(n.text || 'FORM_BLANK', n.x, n.y, null, n.id);
                 }
             });
             state.edges.forEach(e => {
-                // Only create edge if both source and target exist
                 if (nodes.has(e.source) && nodes.has(e.target)) {
                     createEdge(e.source, e.target);
                 }
@@ -537,17 +543,17 @@ function removeNodeFromDOM(id) {
 
 /* --- MindMap Logic --- */
 function handleBoardDoubleClick(e) {
-    if (!mindmapView.classList.contains('active')) return;
-    if (e.target === board || e.target === linesLayer) {
-        createNewTextInput(e.clientX, e.clientY);
-    }
+    // Moved to handleBoardDoubleClick in later section
 }
 
 function handlePointerDown(e) {
     if (!mindmapView.classList.contains('active')) return;
     const target = e.target;
-    const x = e.clientX;
-    const y = e.clientY;
+    
+    // Convert viewport coordinates to board coordinates
+    const rect = board.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
     if (target.classList.contains('connector')) {
         isDrawingEdge = true;
@@ -592,8 +598,10 @@ function handlePointerDown(e) {
 
 function handlePointerMove(e) {
     if (!mindmapView.classList.contains('active')) return;
-    const x = e.clientX;
-    const y = e.clientY;
+    
+    const rect = board.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
     if (isDraggingNode && draggedNodeId) {
         const node = nodes.get(draggedNodeId);
@@ -613,8 +621,10 @@ function handlePointerMove(e) {
 function handlePointerUp(e) {
     if (!mindmapView.classList.contains('active')) return;
     const target = e.target;
-    const x = e.clientX;
-    const y = e.clientY;
+    
+    const rect = board.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
     if (isDraggingNode && draggedNodeId) {
         const nodeEl = nodes.get(draggedNodeId).element;
@@ -622,7 +632,7 @@ function handlePointerUp(e) {
         nodeEl.classList.remove('dragging');
         try { nodeEl.releasePointerCapture(e.pointerId); } catch (err) { }
         draggedNodeId = null;
-        saveMindMapState(); // Save purely node dragging position changes.
+        saveMindMapState();
     } else if (isDrawingEdge) {
         isDrawingEdge = false;
 
@@ -639,7 +649,7 @@ function handlePointerUp(e) {
                 saveMindMapState();
             }
         } else {
-            const input = createNewTextInput(x, y);
+            const input = createNewTextInputForBoard(x, y);
             input.dataset.sourceId = edgeSourceId;
         }
 
@@ -648,6 +658,20 @@ function handlePointerUp(e) {
         edgeSourceId = null;
 
         try { target.releasePointerCapture(e.pointerId); } catch (err) { }
+    }
+}
+
+function createNewTextInputForBoard(x, y, initialText = '', replaceNodeId = null) {
+    return createNewTextInput(x, y, initialText, replaceNodeId);
+}
+
+function handleBoardDoubleClick(e) {
+    if (!mindmapView.classList.contains('active')) return;
+    if (e.target === board || e.target === linesLayer) {
+        const rect = board.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        createNewTextInput(x, y);
     }
 }
 
@@ -945,7 +969,7 @@ function clearBoard() {
 
 // --- UAT Logic ---
 let uatState = { mindfulness: 0, clarityLevel: 0, devQaLevel: 0, uatLevel: 0 };
-init();
+// init() call moved to bottom of file
 const JARGON = ["api", "database", "endpoint", "refactor", "server", "json", "sql", "latency", "frontend", "backend", "deployment pipeline", "repo", "commit"];
 
 function resetUatState() {
@@ -1174,9 +1198,9 @@ function createUATQuestionNode(stepId, x, y, connectFromId) {
     return qNodeId;
 }
 
-function createUATAnswerNode(stepId, x, y, connectFromId) {
+function createUATAnswerNode(stepId, x, y, connectFromId, forcedId = null) {
     const step = UAT_STEPS[stepId];
-    const aNodeId = generateId();
+    const aNodeId = forcedId || generateId();
 
     const el = document.createElement('div');
     el.className = 'node uat-answer-node';
@@ -1252,7 +1276,7 @@ function createUATAnswerNode(stepId, x, y, connectFromId) {
 
     board.appendChild(el);
 
-    const node = { id: aNodeId, element: el, x, y, text: "UAT_FORM", isUAT: true };
+    const node = { id: aNodeId, element: el, x, y, text: "UAT_FORM", isUAT: true, stepId: stepId };
     nodes.set(aNodeId, node);
     if (connectFromId) createEdge(connectFromId, aNodeId);
 
@@ -1310,3 +1334,6 @@ function submitUATAnswer(stepId, answerNodeId, value) {
         saveMindMapState();
     }
 }
+
+// Final Initialization
+init();
